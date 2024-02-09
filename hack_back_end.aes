@@ -1,0 +1,39 @@
+contract PreBook=
+    record  ser_provider = {
+        server : address,
+        customer : map(int,customer),
+        bill: int
+    }
+
+    record client={
+      first_name : string,
+      second_name : string,
+      total_pay : int ,
+      is_billed : bool,
+      order_booked:string,
+      customer_address : address
+      
+    }
+
+    entrypoint init(bill : int): state ={
+     ser_provider= Call.caller, client={}}
+
+    payabel stateful entrypoint book_order(first_name string,second_name string):int
+    =
+        let order_id=Map.size(service_provider.order_id)+1
+        let new_client = {
+            first_name=first_name,
+            second_name=second_name,
+            order_id=order_id,
+            billed=false
+
+        }
+    Chain.spend(ser_provider.server,ser_provider.bill)
+    put(service_provider{customer[order_id]=new client})
+
+    private function only_service_provider()=
+        require(Call.caller=state.service_provider,"only service provider can access it.")
+
+    stateful entrypoint clientvisited(client_id:int)=
+        only_service_provider()
+        require
